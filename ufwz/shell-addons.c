@@ -28,7 +28,7 @@ ufw_shell_fprintf(void *dst, const char *fmt, ...)
     va_end(args);
 }
 
-int
+static int
 ufw_shell_addons_init(const struct device *dev)
 {
     (void)dev;
