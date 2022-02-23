@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2022 micro framework workers, All rights reserved.
+ *
+ * Terms for redistribution and use can be found in LICENCE.
+ */
+
+/**
+ * @file shell-addons.c
+ * @brief Zephyr System Shell extensions
+ */
+
 #include <init.h>
 #include <shell/shell.h>
 #include <zephyr.h>
@@ -29,6 +40,14 @@ SYS_INIT(ufw_shell_addons_init, PRE_KERNEL_1, 0);
 
 static RegisterTable *table = NULL;
 
+/**
+ * Specify register table to use for ‘regshow’ command
+ *
+ * @param  t        Pointer to the register table to use.
+ *
+ * @return void
+ * @sideeffects Sets ‘table’ pointer to specified table.
+ */
 void
 ufw_shell_reg_init(RegisterTable *t)
 {
@@ -69,9 +88,44 @@ print_current(struct shell *shell, RegisterHandle h)
     }
 }
 
+
+/**
+ * Shell command callback for the ‘regshow’ command
+ *
+ * When called with zero arguments, it prints the register table specification,
+ * without accessing current data from storage backends.
+ *
+ * When called with a single integer argument, it will print the referenced
+ * register's specification and also reach into storage to reveal its current
+ * value.
+ *
+ * Note that currently, read-access to storage is not serialised in this call
+ * back. So if the application in question uses zephyr's preemptive scheduler,
+ * there is no guarantee the data read is intact if a second thread writes to
+ * it.
+ *
+ * @param  s          Pointer to the shell instance the command was issued in.
+ * @param  argc       Number of entries in the argv parameter.
+ * @param  argv       List of command line arguments. argv[0] is "regshow".
+ *
+ * @return void
+ * @sideeffects Reads and prints register table data as specified.
+ */
 void
 ufw_shell_regshow(const struct shell *s, size_t argc, char **argv)
 {
+    /*
+     * Casting off the ‘const’. UFW's register utilities use an fprintf like
+     * API for its printing backend, with the first argument being a void poin-
+     * ter to allow handing in arbitrary destinations like FILE* or indeed
+     * struct shell*. Keeping this const-correct is tough, because some prin-
+     * ters like that either won't be able to have that argument const, or the
+     * codebase just didn't bother with stiffer const-correctness.
+     *
+     * In any case, our printer callback ‘ufw_shell_fprintf()’ hands its desti-
+     * nation parameter directly to ‘shell_vfprintf()’, which uses a const spe-
+     * cification on its ‘struct shell*’ argument. So no harm done.
+     */
     void *shell = (void*)s;
     if (table == NULL) {
         ufw_shell_fprintf(shell, "No register table found.\n");
