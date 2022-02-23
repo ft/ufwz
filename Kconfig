@@ -1,0 +1,3 @@
+config UFW_ZEPHYR
+	bool "Enable ufw-zephyr extensions"
+	default y
