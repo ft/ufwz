@@ -19,6 +19,16 @@
 #include <c/register-table.h>
 #include <c/register-utilities.h>
 
+/**
+ * fprintf like printer for zephyr shell instances
+ *
+ * @param  dst      Pointer to ‘struct shell’ referencing the context to run in.
+ * @param  fmt      printf-like format string to specifying output.
+ * @param  ...      stdarg va_list of arguments.
+ *
+ * @return void
+ * @sideeffects Print data to referenced shell instance.
+ */
 void
 ufw_shell_fprintf(void *dst, const char *fmt, ...)
 {
