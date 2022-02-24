@@ -78,6 +78,7 @@ print_by_handle(struct shell *shell, RegisterHandle h)
         outofrange(shell, h);
         return -1;
     }
+    ufw_shell_fprintf(shell, "  RegisterEntryID: %" PRIu32 "\n", h);
     register_entry_print(shell, "", e);
     return 0;
 }
@@ -98,6 +99,40 @@ print_current(struct shell *shell, RegisterHandle h)
     }
 }
 
+static int
+print_with_current(struct shell *shell, long int reg)
+{
+    if (print_by_handle(shell, reg) == 0) {
+        print_current(shell, reg);
+        return 0;
+    }
+    return -1;
+}
+
+static int
+print_range(struct shell *shell, const char *s, const char *e)
+{
+    long int start = strtol(s, NULL, 10u);
+    long int end   = strtol(e, NULL, 10u);
+
+    if (start < 0) {
+        outofrange(shell, start);
+        return -1;
+    }
+
+    if (start > end) {
+        ufw_shell_fprintf(shell,
+                          "Start parameter must be <= End parameter.\n");
+        return -1;
+    }
+    for (long int i = start; i <= end; ++i) {
+        if (print_with_current(shell, i) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
 
 /**
  * Shell command callback for the ‘regshow’ command
@@ -108,6 +143,11 @@ print_current(struct shell *shell, RegisterHandle h)
  * When called with a single integer argument, it will print the referenced
  * register's specification and also reach into storage to reveal its current
  * value.
+ *
+ * When called with two integer arguments, the command prints the same
+ * information as it would with one When called with two integer arguments, the
+ * command prints the same information as with one argument, but for all the
+ * register within the range if register IDs, including the range boundaries.
  *
  * Note that currently, read-access to storage is not serialised in this call
  * back. So if the application in question uses zephyr's preemptive scheduler,
@@ -144,16 +184,14 @@ ufw_shell_regshow(const struct shell *s, size_t argc, char **argv)
     if (argc == 1u) {
         register_table_print(shell, "", table);
     } else if (argc == 2u) {
-        long int reg = strtol(argv[1], NULL, 10u);
-        if (reg < 0) {
-            outofrange(shell, reg);
-            return;
-        }
-        if (print_by_handle(shell, reg) == 0) {
-            print_current(shell, reg);
-        }
+        print_range(shell, argv[1], argv[1]);
+    } else if (argc == 3u) {
+        print_range(shell, argv[1], argv[2]);
     } else {
-        ufw_shell_fprintf(shell, "usage: regshow [HANDLE : Integer]\n");
+        ufw_shell_fprintf(shell,
+                          "usage: regshow "
+                          "[HANDLE : Integer] "
+                          "[HANDLE : Integer\n");
     }
 }
 
