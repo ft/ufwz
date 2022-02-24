@@ -11,6 +11,7 @@
 
 #include <init.h>
 #include <shell/shell.h>
+#include <stdbool.h>
 #include <zephyr.h>
 
 #include <stdarg.h>
@@ -134,6 +135,32 @@ print_range(struct shell *shell, const char *s, const char *e)
     return 0;
 }
 
+static bool
+want_help(size_t argc, const char *arg)
+{
+    return ((argc == 2u)
+            && (   (strcmp(arg, "--usage") == 0)
+                || (strcmp(arg, "-u")      == 0)));
+}
+
+static void
+regshow_usage(struct shell *shell)
+{
+    ufw_shell_fprintf(shell, "usage: regshow "
+                             "[HANDLE : Integer] "
+                             "[HANDLE : Integer]\n\n");
+    ufw_shell_fprintf(
+        shell,
+        "When called with a single integer argument, it will print the\n"
+        "referenced register's specification and also reach into storage\n"
+        "to reveal its current value.\n\n"
+        "When called with two integer arguments, the command prints the\n"
+        "same information as it would with one When called with two integer\n"
+        "arguments, the command prints the same information as with one ar-\n"
+        "gument, but for all the register within the range if register IDs,\n"
+        "including the range boundaries.\n");
+}
+
 /**
  * Shell command callback for the ‘regshow’ command
  *
@@ -142,7 +169,7 @@ print_range(struct shell *shell, const char *s, const char *e)
  *
  * When called with a single integer argument, it will print the referenced
  * register's specification and also reach into storage to reveal its current
- * value.
+ * value. If the first argument indicates a cry for help, print usage message.
  *
  * When called with two integer arguments, the command prints the same
  * information as it would with one When called with two integer arguments, the
@@ -177,10 +204,17 @@ ufw_shell_regshow(const struct shell *s, size_t argc, char **argv)
      * cification on its ‘struct shell*’ argument. So no harm done.
      */
     void *shell = (void*)s;
+
+    if (want_help(argc, argv[1])) {
+        regshow_usage(shell);
+        return;
+    }
+
     if (table == NULL) {
         ufw_shell_fprintf(shell, "No register table found.\n");
         return;
     }
+
     if (argc == 1u) {
         register_table_print(shell, "", table);
     } else if (argc == 2u) {
@@ -188,10 +222,7 @@ ufw_shell_regshow(const struct shell *s, size_t argc, char **argv)
     } else if (argc == 3u) {
         print_range(shell, argv[1], argv[2]);
     } else {
-        ufw_shell_fprintf(shell,
-                          "usage: regshow "
-                          "[HANDLE : Integer] "
-                          "[HANDLE : Integer\n");
+        regshow_usage(shell);
     }
 }
 
