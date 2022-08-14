@@ -3,7 +3,7 @@
 
 #include <stdarg.h>
 
-#include <c/register-table.h>
+#include <ufw/register-table.h>
 
 void ufw_shell_fprintf(void*, const char*, ...);
 void ufw_shell_reg_init(RegisterTable*);

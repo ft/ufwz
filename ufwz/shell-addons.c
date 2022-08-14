@@ -11,14 +11,14 @@
 
 #include <init.h>
 #include <shell/shell.h>
-#include <stdbool.h>
 #include <zephyr.h>
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
-#include <c/register-table.h>
-#include <c/register-utilities.h>
+#include <ufw/register-table.h>
+#include <ufw/register-utilities.h>
 
 /**
  * fprintf like printer for zephyr shell instances
