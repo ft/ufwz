@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 micro framework workers, All rights reserved.
+ * Copyright (c) 2022-2024 micro framework workers, All rights reserved.
  *
  * Terms for redistribution and use can be found in LICENCE.
  */
@@ -9,16 +9,19 @@
  * @brief Zephyr System Shell extensions
  */
 
-#include <init.h>
-#include <shell/shell.h>
-#include <zephyr.h>
+#include <zephyr/init.h>
+#include <zephyr/kernel.h>
+#include <zephyr/shell/shell.h>
 
+#include <inttypes.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
 #include <ufw/register-table.h>
 #include <ufw/register-utilities.h>
+
+#include <ufwz/shell-addons.h>
 
 /**
  * fprintf like printer for zephyr shell instances
@@ -40,9 +43,8 @@ ufw_shell_fprintf(void *dst, const char *fmt, ...)
 }
 
 static int
-ufw_shell_addons_init(const struct device *dev)
+ufw_shell_addons_init(void)
 {
-    (void)dev;
     register_set_printer(ufw_shell_fprintf);
     return 0;
 }

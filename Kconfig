@@ -1,3 +1,12 @@
 config UFW_ZEPHYR
 	bool "Enable ufw-zephyr extensions"
-	default y
+	default n
+
+if UFW_ZEPHYR
+
+config UFW_SHELL_ADDONS
+	bool "Enable ufw-zephyr's shell addons"
+        depends on SHELL
+	default n
+
+endif # UFW_ZEPHYR
