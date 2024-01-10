@@ -9,6 +9,10 @@ config UFW_SHELL_ADDONS
         depends on SHELL
 	default n
 
+config UFW_ENDPOINT_UART_POLL
+	bool "Implementing endpoints with zephyr's uart-polling API"
+	default n
+
 config UFW_SLAB_ALLOCATOR
 	bool "Allow using slab allocators as ufw BlockAllocators"
 	default n
