@@ -9,6 +9,10 @@ config UFW_SHELL_ADDONS
         depends on SHELL
 	default n
 
+config UFW_SLAB_ALLOCATOR
+	bool "Allow using slab allocators as ufw BlockAllocators"
+	default n
+
 config UFW_SPI_TEXT
 	bool "Enable ufw-zephyr's text based SPI controller"
 	def_bool   DT_HAS_UFW_SPI_TEXT_ENABLED
