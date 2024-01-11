@@ -13,6 +13,10 @@ config UFW_ENDPOINT_UART_POLL
 	bool "Implementing endpoints with zephyr's uart-polling API"
 	default n
 
+config UFW_ENDPOINT_UART_FIFO
+	bool "Implementing endpoints with zephyr's uart-fifo API"
+	default n
+
 config UFW_SLAB_ALLOCATOR
 	bool "Allow using slab allocators as ufw BlockAllocators"
 	default n
