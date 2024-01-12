@@ -31,4 +31,14 @@ config UFW_SPI_TEXT_INIT_PRIORITY
        depends on UFW_SPI_TEXT
        default 70
 
+config UFW_I2C_TEXT
+	bool "Enable ufw-zephyr's text based I2C controller"
+	def_bool   DT_HAS_UFW_I2C_TEXT_ENABLED
+	depends on DT_HAS_UFW_I2C_TEXT_ENABLED
+
+config UFW_I2C_TEXT_INIT_PRIORITY
+       int "Init priority for the i2c-text driver"
+       depends on UFW_I2C_TEXT
+       default 70
+
 endif # UFW_ZEPHYR
